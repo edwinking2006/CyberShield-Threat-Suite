@@ -1,59 +1,91 @@
 import os
 import re
+import requests
+import joblib
+import numpy as np
 from urllib.parse import urlparse
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-# Enable CORS so Chrome Extension can make POST requests to Render API
 CORS(app)
 
+VT_API_KEY = os.environ.get('VIRUSTOTAL_API_KEY', '056f4166e43eef4a12fd246944d73df93151cbd6a9aca7349afbc7837ceea64e')
+
+# Load ML Model if exists
+MODEL_PATH = 'phishing_model.pkl'
+ml_model = None
+if os.path.exists(MODEL_PATH):
+    try:
+        ml_model = joblib.load(MODEL_PATH)
+        print("✅ ML Model Loaded Successfully")
+    except Exception as e:
+        print(f"ML Model Load Error: {e}")
+
+def extract_features(target_url):
+    parsed = urlparse(target_url)
+    domain = parsed.netloc.lower()
+    
+    url_len = len(target_url)
+    domain_len = len(domain)
+    count_dots = target_url.count('.')
+    count_hyphens = target_url.count('-')
+    is_ip = 1 if re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", domain) else 0
+    count_at = 1 if "@" in target_url else 0
+    has_https = 1 if parsed.scheme == 'https' else 0
+    num_subdomains = len(domain.split('.'))
+    
+    return [url_len, domain_len, count_dots, count_hyphens, is_ip, count_at, has_https, num_subdomains]
+
+def check_virustotal(target_url):
+    if not VT_API_KEY:
+        return False, "VirusTotal API Key not configured"
+    try:
+        headers = {"x-apikey": VT_API_KEY}
+        import base64
+        url_id = base64.urlsafe_b64encode(target_url.encode()).decode().strip("=")
+        response = requests.get(f"https://www.virustotal.com/api/v3/urls/{url_id}", headers=headers, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            stats = data.get('data', {}).get('attributes', {}).get('last_analysis_stats', {})
+            malicious_count = stats.get('malicious', 0)
+            if malicious_count > 0:
+                return True, f"Flagged by {malicious_count} security engines on VirusTotal"
+    except Exception as e:
+        print(f"VT Error: {e}")
+    return False, None
+
 def analyze_url(target_url):
-    """
-    Advanced Heuristic & Rule-Based Phishing Detection Engine
-    """
     score = 0
     reasons = []
 
     if not target_url:
         return {'is_phishing': False, 'risk_score': 0, 'status': 'SAFE', 'reasons': []}
 
+    # 1. ML AI Prediction
+    if ml_model:
+        features = np.array([extract_features(target_url)])
+        prediction = ml_model.predict(features)[0]
+        prob = ml_model.predict_proba(features)[0][1] * 100
+        if prediction == 1:
+            score += int(prob * 0.5)
+            reasons.append(f"AI Machine Learning Engine predicted high anomaly ({int(prob)}% confidence)")
+
+    # 2. VirusTotal API Lookup
+    is_vt_malicious, vt_msg = check_virustotal(target_url)
+    if is_vt_malicious:
+        score += 70
+        reasons.append(vt_msg)
+
+    # 3. Domain Spoofing Checks
     parsed = urlparse(target_url)
     domain = parsed.netloc.lower()
+    brand_targets = ['paypal', 'google', 'facebook', 'instagram', 'netflix', 'amazon', 'sbi', 'hdfc']
+    for brand in brand_targets:
+        if brand in domain and not domain.endswith(f".{brand}.com") and domain != f"{brand}.com":
+            score += 40
+            reasons.append(f"Spoofing indicator detected for brand '{brand}'")
 
-    # 1. Check URL Length
-    if len(target_url) > 75:
-        score += 25
-        reasons.append("URL length is unusually long (>75 chars)")
-
-    # 2. Check for IP Address instead of Domain
-    ip_pattern = r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$"
-    if re.match(ip_pattern, domain):
-        score += 35
-        reasons.append("Raw IP address used instead of valid Domain Name")
-
-    # 3. Check for "@" Symbol (Redirection Trick)
-    if "@" in target_url:
-        score += 30
-        reasons.append("Contains '@' symbol used for credential/URL spoofing")
-
-    # 4. Check for Suspicious Keywords
-    suspicious_keywords = [
-        'login', 'verify', 'update', 'banking', 'secure', 'account',
-        'free', 'bonus', 'claim', 'paypal', 'support', 'signin', 'confirm'
-    ]
-    matched_keywords = [kw for kw in suspicious_keywords if kw in target_url.lower()]
-    if matched_keywords:
-        score += len(matched_keywords) * 15
-        reasons.append(f"Contains phishing target keywords: {', '.join(matched_keywords)}")
-
-    # 5. Check Subdomains Count
-    subdomains = domain.split('.')
-    if len(subdomains) > 3:
-        score += 20
-        reasons.append("Excessive subdomains detected")
-
-    # Final Risk Assessment
     risk_score = min(score, 100)
     is_phishing = risk_score >= 50
 
@@ -65,33 +97,22 @@ def analyze_url(target_url):
         'reasons': reasons
     }
 
-# ----------------- WEB DASHBOARD ROUTES ----------------- #
-
 @app.route('/')
 def home():
-    # Renders the main web scanner UI
     return render_template('index.html')
 
 @app.route('/scan', methods=['POST'])
 def web_scan():
-    # Route for the Web UI Form Submission
     target_url = request.form.get('url', '')
     result = analyze_url(target_url)
     return render_template('index.html', result=result, input_url=target_url)
 
-# ----------------- CHROME EXTENSION API ENDPOINTS ----------------- #
-
 @app.route('/scan-url', methods=['POST'])
 def extension_scan():
-    # Route for Chrome Extension API call
     data = request.get_json() or {}
     target_url = data.get('url', '')
     result = analyze_url(target_url)
     return jsonify(result)
-
-@app.route('/health', methods=['GET'])
-def health_check():
-    return jsonify({'status': 'online', 'service': 'CyberShield Threat Suite'})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
