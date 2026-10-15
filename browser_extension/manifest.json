@@ -2,11 +2,20 @@
   "manifest_version": 3,
   "name": "CyberShield URL Inspector",
   "version": "1.0",
-  "description": "Real-time AI Phishing Detector",
-  "permissions": ["tabs", "activeTab", "scripting", "webNavigation"],
-  "host_permissions": ["<all_urls>"],
+  "description": "Real-time AI & VirusTotal Phishing Detector",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "background": {
     "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "CyberShield Threat Inspector"
   },
   "content_scripts": [
     {
