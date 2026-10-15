@@ -5,3 +5,6 @@ gunicorn
 scikit-learn
 joblib
 numpy
+pillow
+pyzbar
+python-whois
