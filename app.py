@@ -1,5 +1,7 @@
 import os
 import re
+import socket
+import ssl
 import requests
 import joblib
 import numpy as np
@@ -15,14 +17,13 @@ CORS(app)
 
 VT_API_KEY = os.environ.get('VIRUSTOTAL_API_KEY', '056f4166e43eef4a12fd246944d73df93151cbd6a9aca7349afbc7837ceea64e')
 
-# Load ML Model
 MODEL_PATH = 'phishing_model.pkl'
 ml_model = None
 if os.path.exists(MODEL_PATH):
     try:
         ml_model = joblib.load(MODEL_PATH)
     except Exception as e:
-        print(f"ML Model Load Error: {e}")
+        print(f"ML Model Error: {e}")
 
 def extract_features(target_url):
     parsed = urlparse(target_url)
@@ -49,7 +50,7 @@ def analyze_url(target_url):
         prob = ml_model.predict_proba(features)[0][1] * 100
         if prediction == 1:
             score += int(prob * 0.5)
-            reasons.append(f"AI Machine Learning Engine confidence: {int(prob)}%")
+            reasons.append(f"AI Machine Learning Threat Engine confidence: {int(prob)}%")
 
     parsed = urlparse(target_url)
     domain = parsed.netloc.lower()
@@ -89,7 +90,7 @@ def extension_scan():
 @app.route('/scan-qr', methods=['POST'])
 def scan_qr():
     if 'qr_image' not in request.files:
-        return render_template('index.html', qr_error="No file uploaded")
+        return render_template('index.html', qr_error="No image uploaded")
     file = request.files['qr_image']
     try:
         img = Image.open(file)
@@ -100,23 +101,37 @@ def scan_qr():
         result = analyze_url(extracted_url)
         return render_template('index.html', result=result, extracted_qr_url=extracted_url)
     except Exception as e:
-        return render_template('index.html', qr_error=f"Error reading QR code: {str(e)}")
+        return render_template('index.html', qr_error=f"QR Decode Error: {str(e)}")
 
 @app.route('/whois', methods=['POST'])
 def whois_lookup():
     domain_name = request.form.get('domain', '')
     try:
         w = whois.whois(domain_name)
-        info = {
-            'domain': domain_name,
-            'registrar': w.registrar,
-            'creation_date': str(w.creation_date),
-            'country': w.country,
-            'emails': w.emails
-        }
-        return render_template('index.html', whois_info=info)
+        return render_template('index.html', whois_info=str(w))
     except Exception as e:
-        return render_template('index.html', whois_error=f"WHOIS lookup failed: {str(e)}")
+        return render_template('index.html', whois_info=f"WHOIS Lookup failed: {str(e)}")
+
+@app.route('/ssl-check', methods=['POST'])
+def ssl_check():
+    domain = request.form.get('domain', '')
+    try:
+        ctx = ssl.create_default_context()
+        with socket.create_connection((domain, 443), timeout=5) as sock:
+            with ctx.wrap_socket(sock, server_hostname=domain) as ssock:
+                cert = ssock.getpeercert()
+                return render_template('index.html', ssl_result=str(cert))
+    except Exception as e:
+        return render_template('index.html', ssl_result=f"SSL Check Error: {str(e)}")
+
+@app.route('/headers-check', methods=['POST'])
+def headers_check():
+    url = request.form.get('url', '')
+    try:
+        r = requests.get(url, timeout=5)
+        return render_template('index.html', headers_result=str(dict(r.headers)))
+    except Exception as e:
+        return render_template('index.html', headers_result=f"Headers Audit Error: {str(e)}")
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
