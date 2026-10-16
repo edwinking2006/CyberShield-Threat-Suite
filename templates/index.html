@@ -6,183 +6,207 @@
     <title>CyberShield Ultimate Threat Suite</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         body { background-color: #080c14; color: #33f3ff; font-family: 'Segoe UI', monospace, sans-serif; }
         .cyber-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 14px; padding: 25px; box-shadow: 0 0 20px rgba(0,242,254,0.1); }
         .cyber-btn { background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); color: #000; font-weight: bold; border: none; }
         .cyber-btn:hover { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #000; box-shadow: 0 0 15px #00f2fe; }
-        .nav-pills .nav-link { color: #94a3b8; background: #1e293b; margin: 4px; border-radius: 8px; font-weight: 600; }
-        .nav-pills .nav-link.active { background: #00f2fe; color: #000; font-weight: bold; box-shadow: 0 0 10px #00f2fe; }
+        .tab-btn { color: #94a3b8; background: #1e293b; margin: 4px; border-radius: 8px; font-weight: 600; padding: 10px 16px; border: none; transition: 0.2s; }
+        .tab-btn.active { background: #00f2fe; color: #000; font-weight: bold; box-shadow: 0 0 12px #00f2fe; }
         .result-box { background: #1a2234; border-left: 4px solid #00f2fe; padding: 15px; border-radius: 6px; margin-top: 15px; color: #fff; }
-        .form-control, .form-select { background: #0b1120; border: 1px solid #334155; color: #00f2fe; }
+        .form-control { background: #0b1120; border: 1px solid #334155; color: #00f2fe; }
         .form-control:focus { background: #0b1120; color: #00f2fe; border-color: #00f2fe; box-shadow: 0 0 10px #00f2fe; }
     </style>
 </head>
-<body>
+<body x-data="{ tab: '{{ active_tab if active_tab else 'url' }}' }">
 <div class="container-fluid py-4">
     <div class="text-center mb-4">
         <h1 class="fw-bold" style="letter-spacing: 2px;">🛡️ CYBERSHIELD ULTIMATE THREAT SUITE</h1>
-        <p class="text-secondary">Next-Gen Real-Time Cyber Security, Threat Intelligence & Utility Engine</p>
+        <p class="text-secondary">Next-Gen Real-Time Cyber Security & Threat Intelligence Engine</p>
     </div>
 
-    <!-- Navigation Bar -->
-    <ul class="nav nav-pills justify-content-center mb-4" id="pills-tab" role="tablist">
-        <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-url"><i class="fa-solid fa-globe"></i> URL Inspector</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-qr"><i class="fa-solid fa-qrcode"></i> QR Quishing</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-whois"><i class="fa-solid fa-server"></i> WHOIS & IP</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-ssl"><i class="fa-solid fa-lock"></i> SSL Certificate</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-headers"><i class="fa-solid fa-shield-halved"></i> Security Headers</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-pwd"><i class="fa-solid fa-key"></i> Password & Leaks</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-hash"><i class="fa-solid fa-hashtag"></i> Hash Tool</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-jwt"><i class="fa-solid fa-code"></i> Base64 / JWT</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-enc"><i class="fa-solid fa-user-secret"></i> Text Encryptor</button></li>
-    </ul>
+    <!-- Navigation Tabs -->
+    <div class="d-flex flex-wrap justify-content-center mb-4">
+        <button class="tab-btn" :class="{ 'active': tab === 'url' }" @click="tab = 'url'"><i class="fa-solid fa-globe"></i> URL Inspector</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'qr' }" @click="tab = 'qr'"><i class="fa-solid fa-qrcode"></i> QR Quishing</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'whois' }" @click="tab = 'whois'"><i class="fa-solid fa-server"></i> WHOIS & IP</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'ports' }" @click="tab = 'ports'"><i class="fa-solid fa-network-wired"></i> Port Scanner</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'subdomains' }" @click="tab = 'subdomains'"><i class="fa-solid fa-sitemap"></i> Subdomain Finder</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'dns' }" @click="tab = 'dns'"><i class="fa-solid fa-dns"></i> DNS Lookup</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'ssl' }" @click="tab = 'ssl'"><i class="fa-solid fa-lock"></i> SSL Cert Audit</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'headers' }" @click="tab = 'headers'"><i class="fa-solid fa-shield-halved"></i> Security Headers</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'pwd' }" @click="tab = 'pwd'"><i class="fa-solid fa-key"></i> Password Strength</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'hash' }" @click="tab = 'hash'"><i class="fa-solid fa-hashtag"></i> Hash Tool</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'jwt' }" @click="tab = 'jwt'"><i class="fa-solid fa-code"></i> Base64 / JWT</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'enc' }" @click="tab = 'enc'"><i class="fa-solid fa-user-secret"></i> Text Cipher</button>
+    </div>
 
-    <div class="tab-content container">
+    <div class="container">
         <!-- 1. URL Inspector -->
-        <div class="tab-pane fade show active" id="tab-url">
-            <div class="cyber-card">
-                <h3><i class="fa-solid fa-radar"></i> AI Phishing & Malicious URL Scanner</h3>
-                <form action="/scan" method="POST" class="mt-3">
-                    <div class="input-group">
-                        <input type="text" name="url" class="form-control form-control-lg" placeholder="Enter URL (e.g. http://paypal-login-security-update.com)" required value="{{ input_url if input_url }}">
-                        <button class="btn cyber-btn px-4" type="submit">SCAN THREAT</button>
-                    </div>
-                </form>
-
-                {% if result %}
-                <div class="result-box mt-4 border-start border-4 {{ 'border-danger' if result.is_phishing else 'border-success' }}">
-                    <h4 class="{{ 'text-danger' if result.is_phishing else 'text-success' }}">STATUS: {{ result.status }} (Risk Score: {{ result.risk_score }}%)</h4>
-                    <p><b>Target URL:</b> {{ result.url }}</p>
-                    {% if result.reasons %}
-                    <ul>
-                        {% for reason in result.reasons %}
-                        <li>{{ reason }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
+        <div x-show="tab === 'url'" class="cyber-card">
+            <h3><i class="fa-solid fa-radar"></i> AI Phishing & Malicious URL Scanner</h3>
+            <form action="/scan" method="POST" class="mt-3">
+                <div class="input-group">
+                    <input type="text" name="url" class="form-control form-control-lg" placeholder="Enter URL (e.g. http://192.168.1.1/admin/login_en.asp)" required value="{{ input_url if input_url }}">
+                    <button class="btn cyber-btn px-4" type="submit">SCAN THREAT</button>
                 </div>
+            </form>
+
+            {% if result %}
+            <div class="result-box mt-4 border-start border-4 {{ 'border-danger' if result.is_phishing else 'border-success' }}">
+                <h4 class="{{ 'text-danger' if result.is_phishing else 'text-success' }}">STATUS: {{ result.status }} (Risk Score: {{ result.risk_score }}%)</h4>
+                <p><b>Target URL:</b> {{ result.url }}</p>
+                {% if result.reasons %}
+                <ul>
+                    {% for reason in result.reasons %}
+                    <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
                 {% endif %}
             </div>
+            {% endif %}
         </div>
 
         <!-- 2. QR Scanner -->
-        <div class="tab-pane fade" id="tab-qr">
-            <div class="cyber-card">
-                <h3><i class="fa-solid fa-qrcode"></i> QR Quishing Threat Inspector</h3>
-                <p class="text-secondary">Upload QR image to extract and analyze hidden phishing URLs</p>
-                <form action="/scan-qr" method="POST" enctype="multipart/form-data" class="mt-3">
-                    <input type="file" name="qr_image" class="form-control mb-3" accept="image/*" required>
-                    <button class="btn cyber-btn w-100" type="submit">ANALYZE QR IMAGE</button>
-                </form>
-                {% if qr_error %}
-                <div class="alert alert-danger mt-3">{{ qr_error }}</div>
-                {% endif %}
-            </div>
+        <div x-show="tab === 'qr'" class="cyber-card" style="display: none;">
+            <h3><i class="fa-solid fa-qrcode"></i> QR Quishing Threat Inspector</h3>
+            <form action="/scan-qr" method="POST" enctype="multipart/form-data" class="mt-3">
+                <input type="file" name="qr_image" class="form-control mb-3" accept="image/*" required>
+                <button class="btn cyber-btn w-100" type="submit">ANALYZE QR IMAGE</button>
+            </form>
+            {% if qr_error %}
+            <div class="alert alert-danger mt-3">{{ qr_error }}</div>
+            {% endif %}
         </div>
 
-        <!-- 3. WHOIS & IP -->
-        <div class="tab-pane fade" id="tab-whois">
-            <div class="cyber-card">
-                <h3><i class="fa-solid fa-network-wired"></i> Domain WHOIS & IP Lookup</h3>
-                <form action="/whois" method="POST" class="mt-3">
-                    <div class="input-group">
-                        <input type="text" name="domain" class="form-control" placeholder="Enter Domain (e.g. google.com)" required>
-                        <button class="btn cyber-btn" type="submit">LOOKUP INFO</button>
-                    </div>
-                </form>
-                {% if whois_info %}
-                <div class="result-box mt-3">
-                    <pre class="text-white">{{ whois_info }}</pre>
+        <!-- 3. WHOIS -->
+        <div x-show="tab === 'whois'" class="cyber-card" style="display: none;">
+            <h3><i class="fa-solid fa-server"></i> Domain WHOIS & IP Geolocator</h3>
+            <form action="/whois" method="POST" class="mt-3">
+                <div class="input-group">
+                    <input type="text" name="domain" class="form-control" placeholder="Domain (e.g. google.com)" required>
+                    <button class="btn cyber-btn" type="submit">LOOKUP WHOIS</button>
                 </div>
-                {% endif %}
-            </div>
+            </form>
+            {% if whois_info %}
+            <div class="result-box mt-3"><pre class="text-white mb-0" style="white-space: pre-wrap;">{{ whois_info }}</pre></div>
+            {% endif %}
         </div>
 
-        <!-- 4. SSL Analyzer -->
-        <div class="tab-pane fade" id="tab-ssl">
-            <div class="cyber-card">
-                <h3><i class="fa-solid fa-shield-cat"></i> SSL / TLS Certificate Checker</h3>
-                <form action="/ssl-check" method="POST" class="mt-3">
-                    <div class="input-group">
-                        <input type="text" name="domain" class="form-control" placeholder="Domain name (e.g. github.com)" required>
-                        <button class="btn cyber-btn" type="submit">CHECK SSL</button>
-                    </div>
-                </form>
-                {% if ssl_result %}
-                <div class="result-box mt-3"><pre class="text-white">{{ ssl_result }}</pre></div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- 5. Security Headers -->
-        <div class="tab-pane fade" id="tab-headers">
-            <div class="cyber-card">
-                <h3><i class="fa-solid fa-bug"></i> HTTP Security Headers Audit</h3>
-                <form action="/headers-check" method="POST" class="mt-3">
-                    <div class="input-group">
-                        <input type="text" name="url" class="form-control" placeholder="URL (e.g. https://example.com)" required>
-                        <button class="btn cyber-btn" type="submit">AUDIT HEADERS</button>
-                    </div>
-                </form>
-                {% if headers_result %}
-                <div class="result-box mt-3"><pre class="text-white">{{ headers_result }}</pre></div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- 6. Password Check -->
-        <div class="tab-pane fade" id="tab-pwd">
-            <div class="cyber-card">
-                <h3><i class="fa-solid fa-key"></i> Password Strength & Entropy Analyzer</h3>
-                <input type="password" id="pwdInput" class="form-control form-control-lg mt-3" placeholder="Type password to evaluate..." oninput="checkPwd()">
-                <div class="result-box mt-3" id="pwdResult">Entropy Score: 0 bits | Strength: Too Short</div>
-            </div>
-        </div>
-
-        <!-- 7. Hash Generator -->
-        <div class="tab-pane fade" id="tab-hash">
-            <div class="cyber-card">
-                <h3><i class="fa-solid fa-hashtag"></i> Multi-Hash Generator (MD5, SHA1, SHA256)</h3>
-                <input type="text" id="hashInput" class="form-control mt-3" placeholder="Enter text to hash..." oninput="genHash()">
-                <div class="result-box mt-3" id="hashResult">hashes will appear here...</div>
-            </div>
-        </div>
-
-        <!-- 8. Base64 & JWT Decoder -->
-        <div class="tab-pane fade" id="tab-jwt">
-            <div class="cyber-card">
-                <h3><i class="fa-solid fa-code"></i> Base64 & JWT Token Inspector</h3>
-                <textarea id="jwtInput" class="form-control mt-3" rows="3" placeholder="Paste Base64 or JWT token..."></textarea>
-                <button class="btn cyber-btn mt-3 w-100" onclick="decodeJWT()">DECODE TOKEN</button>
-                <div class="result-box mt-3" id="jwtResult">Decoded output...</div>
-            </div>
-        </div>
-
-        <!-- 9. Text Encryptor -->
-        <div class="tab-pane fade" id="tab-enc">
-            <div class="cyber-card">
-                <h3><i class="fa-solid fa-user-secret"></i> AES / ROT13 Text Cipher</h3>
-                <input type="text" id="plainText" class="form-control mt-3" placeholder="Enter text to cipher...">
-                <div class="mt-3">
-                    <button class="btn cyber-btn me-2" onclick="rot13()">ROT13 Cipher</button>
-                    <button class="btn btn-outline-info" onclick="b64Enc()">Base64 Encode</button>
+        <!-- 4. Port Scanner (NEW) -->
+        <div x-show="tab === 'ports'" class="cyber-card" style="display: none;">
+            <h3><i class="fa-solid fa-network-wired"></i> Fast Port Scanner (80, 443, 21, 22, 3306, 8080)</h3>
+            <form action="/port-scan" method="POST" class="mt-3">
+                <div class="input-group">
+                    <input type="text" name="host" class="form-control" placeholder="Target Domain / IP (e.g. scanme.nmap.org)" required>
+                    <button class="btn cyber-btn" type="submit">SCAN OPEN PORTS</button>
                 </div>
-                <div class="result-box mt-3" id="cipherResult">Ciphertext...</div>
+            </form>
+            {% if port_results %}
+            <div class="result-box mt-3"><pre class="text-white mb-0">{{ port_results }}</pre></div>
+            {% endif %}
+        </div>
+
+        <!-- 5. Subdomain Finder (NEW) -->
+        <div x-show="tab === 'subdomains'" class="cyber-card" style="display: none;">
+            <h3><i class="fa-solid fa-sitemap"></i> Subdomain Enumerator</h3>
+            <form action="/subdomains" method="POST" class="mt-3">
+                <div class="input-group">
+                    <input type="text" name="domain" class="form-control" placeholder="Domain (e.g. github.com)" required>
+                    <button class="btn cyber-btn" type="submit">FIND SUBDOMAINS</button>
+                </div>
+            </form>
+            {% if subdomain_results %}
+            <div class="result-box mt-3"><pre class="text-white mb-0">{{ subdomain_results }}</pre></div>
+            {% endif %}
+        </div>
+
+        <!-- 6. DNS Lookup (NEW) -->
+        <div x-show="tab === 'dns'" class="cyber-card" style="display: none;">
+            <h3><i class="fa-solid fa-dns"></i> DNS Records Lookup (A, MX, NS, TXT)</h3>
+            <form action="/dns-lookup" method="POST" class="mt-3">
+                <div class="input-group">
+                    <input type="text" name="domain" class="form-control" placeholder="Domain (e.g. wikipedia.org)" required>
+                    <button class="btn cyber-btn" type="submit">FETCH DNS RECORDS</button>
+                </div>
+            </form>
+            {% if dns_results %}
+            <div class="result-box mt-3"><pre class="text-white mb-0">{{ dns_results }}</pre></div>
+            {% endif %}
+        </div>
+
+        <!-- 7. SSL Audit -->
+        <div x-show="tab === 'ssl'" class="cyber-card" style="display: none;">
+            <h3><i class="fa-solid fa-lock"></i> SSL Certificate Audit</h3>
+            <form action="/ssl-check" method="POST" class="mt-3">
+                <div class="input-group">
+                    <input type="text" name="domain" class="form-control" placeholder="Domain (e.g. google.com)" required>
+                    <button class="btn cyber-btn" type="submit">CHECK SSL</button>
+                </div>
+            </form>
+            {% if ssl_result %}
+            <div class="result-box mt-3"><pre class="text-white mb-0" style="white-space: pre-wrap;">{{ ssl_result }}</pre></div>
+            {% endif %}
+        </div>
+
+        <!-- 8. Security Headers -->
+        <div x-show="tab === 'headers'" class="cyber-card" style="display: none;">
+            <h3><i class="fa-solid fa-shield-halved"></i> HTTP Security Headers Audit</h3>
+            <form action="/headers-check" method="POST" class="mt-3">
+                <div class="input-group">
+                    <input type="text" name="url" class="form-control" placeholder="URL (e.g. https://google.com)" required>
+                    <button class="btn cyber-btn" type="submit">AUDIT HEADERS</button>
+                </div>
+            </form>
+            {% if headers_result %}
+            <div class="result-box mt-3"><pre class="text-white mb-0" style="white-space: pre-wrap;">{{ headers_result }}</pre></div>
+            {% endif %}
+        </div>
+
+        <!-- 9. Password Strength -->
+        <div x-show="tab === 'pwd'" class="cyber-card" style="display: none;">
+            <h3><i class="fa-solid fa-key"></i> Password Entropy & Leak Tester</h3>
+            <input type="password" id="pwdInput" class="form-control form-control-lg mt-3" placeholder="Type password..." oninput="checkPwd()">
+            <div class="result-box mt-3" id="pwdResult">Type a password above to evaluate entropy.</div>
+        </div>
+
+        <!-- 10. Hash Generator -->
+        <div x-show="tab === 'hash'" class="cyber-card" style="display: none;">
+            <h3><i class="fa-solid fa-hashtag"></i> Multi-Hash Generator (MD5, SHA1, SHA256)</h3>
+            <input type="text" id="hashInput" class="form-control mt-3" placeholder="Type text..." oninput="genHash()">
+            <div class="result-box mt-3" id="hashResult">Hashes will render here...</div>
+        </div>
+
+        <!-- 11. JWT Decoder -->
+        <div x-show="tab === 'jwt'" class="cyber-card" style="display: none;">
+            <h3><i class="fa-solid fa-code"></i> Base64 & JWT Token Decoder</h3>
+            <textarea id="jwtInput" class="form-control mt-3" rows="3" placeholder="Paste Base64 or JWT token..."></textarea>
+            <button class="btn cyber-btn mt-3 w-100" onclick="decodeJWT()">DECODE TOKEN</button>
+            <div class="result-box mt-3" id="jwtResult">Decoded output...</div>
+        </div>
+
+        <!-- 12. Text Encryptor -->
+        <div x-show="tab === 'enc'" class="cyber-card" style="display: none;">
+            <h3><i class="fa-solid fa-user-secret"></i> Text Cipher Utility</h3>
+            <input type="text" id="plainText" class="form-control mt-3" placeholder="Enter text...">
+            <div class="mt-3">
+                <button class="btn cyber-btn me-2" onclick="rot13()">ROT13 Cipher</button>
+                <button class="btn btn-outline-info" onclick="b64Enc()">Base64 Encode</button>
             </div>
+            <div class="result-box mt-3" id="cipherResult">Ciphertext...</div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/bootstrap.bundle.min.js"></script>
 <script>
     function checkPwd() {
         let p = document.getElementById("pwdInput").value;
         let score = p.length * 4;
-        if(/[A-Z]/.test(p)) score += 10;
-        if(/[0-9]/.test(p)) score += 10;
-        if(/[^A-Za-z0-9]/.test(p)) score += 15;
-        document.getElementById("pwdResult").innerText = `Length: ${p.length} | Score: ${score} / 100 | Assessment: ${score > 60 ? 'STRONG' : 'WEAK'}`;
+        if(/[A-Z]/.test(p)) score += 15;
+        if(/[0-9]/.test(p)) score += 15;
+        if(/[^A-Za-z0-9]/.test(p)) score += 20;
+        document.getElementById("pwdResult").innerText = `Length: ${p.length} | Entropy Score: ${score}/100 | Strength: ${score > 65 ? 'STRONG' : 'WEAK'}`;
     }
     function rot13() {
         let str = document.getElementById("plainText").value;
@@ -199,7 +223,7 @@
             let val = document.getElementById("jwtInput").value;
             let res = atob(val.split('.')[0] || val);
             document.getElementById("jwtResult").innerText = res;
-        } catch(e) { document.getElementById("jwtResult").innerText = "Invalid Base64/JWT format"; }
+        } catch(e) { document.getElementById("jwtResult").innerText = "Invalid Base64 / JWT String"; }
     }
 </script>
 </body>
