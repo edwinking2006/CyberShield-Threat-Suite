@@ -17,14 +17,14 @@ CORS(app)
 
 VT_API_KEY = os.environ.get('VIRUSTOTAL_API_KEY', '056f4166e43eef4a12fd246944d73df93151cbd6a9aca7349afbc7837ceea64e')
 
-# Load ML Model
+# Load Machine Learning Model
 MODEL_PATH = 'phishing_model.pkl'
 ml_model = None
 if os.path.exists(MODEL_PATH):
     try:
         ml_model = joblib.load(MODEL_PATH)
     except Exception as e:
-        print(f"ML Model Load Error: {e}")
+        print(f"ML Model Load Exception: {e}")
 
 def calculate_entropy(text):
     if not text:
@@ -35,7 +35,7 @@ def calculate_entropy(text):
         entropy -= p_x * math.log(p_x, 2)
     return entropy
 
-def extract_features(target_url):
+def extract_advanced_features(target_url):
     parsed = urlparse(target_url if target_url.startswith('http') else 'http://' + target_url)
     domain = parsed.netloc.lower() or parsed.path.split('/')[0].lower()
     
@@ -50,8 +50,7 @@ def extract_features(target_url):
     
     return [url_len, domain_len, count_dots, count_hyphens, is_ip, count_at, has_https, num_subdomains]
 
-def analyze_url(target_url):
-    score = 0
+def analyze_url_pure_ml(target_url):
     reasons = []
     if not target_url:
         return {'is_phishing': False, 'risk_score': 0, 'status': 'SAFE', 'reasons': []}
@@ -62,78 +61,51 @@ def analyze_url(target_url):
 
     parsed = urlparse(formatted_url)
     domain = parsed.netloc.lower()
-    path = parsed.path.lower()
-    query = parsed.query.lower()
-    full_path = path + ('?' + query if query else '')
 
-    # 1. Hacked WordPress / CMS Directory Abuse Detection
-    cms_hacked_patterns = ['/wp-includes/', '/wp-content/plugins/', '/wp-content/themes/', '/wp-admin/includes/']
-    for pattern in cms_hacked_patterns:
-        if pattern in path:
-            score += 45
-            reasons.append(f"Hacked CMS directory abuse detected ({pattern}) - Highly indicative of phishing upload on compromised website")
-
-    # 2. Protocol / Sensitive Target Keywords in Path
-    path_keywords = ['http', 'https', 'login', 'signin', 'owa', 'zimbra', 'exch', 'secure', 'verify', 'update', 'account', 'banking', 'paypal', 'office']
-    matched_path_kw = [kw for kw in path_keywords if kw in path.split('/')]
-    if matched_path_kw:
-        score += len(matched_path_kw) * 25
-        reasons.append(f"Suspicious path keyword(s) detected: {', '.join(matched_path_kw)}")
-
-    # 3. Path Depth & Structure Anomalies
-    path_segments = [seg for seg in path.split('/') if seg]
-    if len(path_segments) >= 3:
-        score += 20
-        reasons.append(f"Deep directory structure detected ({len(path_segments)} sub-folders deep)")
-
-    if len(full_path) > 25:
-        score += 15
-        reasons.append("Abnormally long URL path string often used to obscure phishing destinations")
-
-    # 4. Entropy & IP Checks
-    url_entropy = calculate_entropy(formatted_url)
-    if url_entropy > 4.3:
-        score += 20
-        reasons.append(f"High Shannon Entropy in URL structure ({url_entropy:.2f} bits)")
-
-    if re.search(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", domain):
-        score += 45
-        reasons.append("Direct IP Host detected (no valid domain mapping)")
-
-    # 5. ML Model Score Integration
+    # 1. Pure ML Model Probability Inference
+    ml_risk_score = 0
     if ml_model:
         try:
-            features = np.array([extract_features(formatted_url)])
+            features = np.array([extract_advanced_features(formatted_url)])
             prob = ml_model.predict_proba(features)[0][1] * 100
-            if prob >= 30:
-                score += int(prob * 0.5)
-                reasons.append(f"AI Neural/Tree Model Anomaly Score: {int(prob)}%")
-        except Exception:
-            pass
+            ml_risk_score = int(prob)
+            reasons.append(f"AI Machine Learning Model Threat Probability: {ml_risk_score}%")
+        except Exception as e:
+            print(f"ML Inference Error: {e}")
 
-    # 6. VirusTotal Live Intel Integration
+    # 2. Real-Time VirusTotal Live Intelligence Query (Global Threat Databases)
+    vt_flagged_count = 0
     if VT_API_KEY:
         try:
             headers = {"x-apikey": VT_API_KEY}
             import base64
             url_id = base64.urlsafe_b64encode(formatted_url.encode()).decode().strip("=")
-            vt_res = requests.get(f"https://www.virustotal.com/api/v3/urls/{url_id}", headers=headers, timeout=3)
+            vt_res = requests.get(f"https://www.virustotal.com/api/v3/urls/{url_id}", headers=headers, timeout=4)
             if vt_res.status_code == 200:
-                vt_data = vt_res.json()
-                malicious_cnt = vt_data.get('data', {}).get('attributes', {}).get('last_analysis_stats', {}).get('malicious', 0)
-                if malicious_cnt > 0:
-                    score += 50 + (malicious_cnt * 10)
-                    reasons.append(f"VirusTotal Global Engine flag: Malicious by {malicious_cnt} security vendors")
+                stats = vt_res.json().get('data', {}).get('attributes', {}).get('last_analysis_stats', {})
+                vt_flagged_count = stats.get('malicious', 0)
+                if vt_flagged_count > 0:
+                    reasons.append(f"Live Antivirus Engine Alert: Flagged malicious by {vt_flagged_count} global security vendors")
         except Exception:
             pass
 
-    risk_score = min(score, 100)
-    is_phishing = risk_score >= 35  # Dynamic Precision Threshold
+    # 3. Dynamic Structural Entropy Metrics
+    entropy_val = calculate_entropy(formatted_url)
+    if entropy_val > 4.7:
+        reasons.append(f"Structural Anomaly: High Shannon Entropy ({entropy_val:.2f} bits) indicates URL obfuscation")
+
+    # Final Composite Risk Score Engine
+    if vt_flagged_count > 0:
+        final_score = min(70 + (vt_flagged_count * 5), 100)
+    else:
+        final_score = ml_risk_score
+
+    is_phishing = final_score >= 50
 
     return {
         'url': target_url,
         'is_phishing': is_phishing,
-        'risk_score': risk_score,
+        'risk_score': final_score,
         'status': 'DANGER' if is_phishing else 'SAFE',
         'reasons': reasons
     }
@@ -145,14 +117,14 @@ def home():
 @app.route('/scan', methods=['POST'])
 def web_scan():
     target_url = request.form.get('url', '')
-    result = analyze_url(target_url)
+    result = analyze_url_pure_ml(target_url)
     return render_template('index.html', result=result, input_url=target_url, active_tab='url')
 
 @app.route('/scan-url', methods=['POST'])
 def extension_scan():
     data = request.get_json() or {}
     target_url = data.get('url', '')
-    result = analyze_url(target_url)
+    result = analyze_url_pure_ml(target_url)
     return jsonify(result)
 
 @app.route('/scan-qr', methods=['POST'])
@@ -167,7 +139,7 @@ def scan_qr():
         extracted_url, _, _ = detector.detectAndDecode(img)
         if not extracted_url:
             return render_template('index.html', qr_error="No valid QR code detected in image", active_tab='qr')
-        result = analyze_url(extracted_url)
+        result = analyze_url_pure_ml(extracted_url)
         return render_template('index.html', result=result, extracted_qr_url=extracted_url, active_tab='qr')
     except Exception as e:
         return render_template('index.html', qr_error=f"QR Decoder Exception: {str(e)}", active_tab='qr')
