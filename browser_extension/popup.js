@@ -1,4 +1,4 @@
-const BACKEND_URL = "https://your-render-app-name.onrender.com/scan-url";
+const BACKEND_URL = "https://cybershield-threat-suite.onrender.com/scan-url";
 
 document.addEventListener('DOMContentLoaded', () => {
   const urlEl = document.getElementById('url');
