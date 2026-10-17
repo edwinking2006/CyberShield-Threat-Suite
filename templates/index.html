@@ -3,62 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberShield Ultimate Threat Suite</title>
+    <title>CyberShield Threat Suite v2.0</title>
+    <!-- Bootstrap 5 & Google Fonts -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <style>
-        body { background-color: #080c14; color: #33f3ff; font-family: 'Segoe UI', monospace, sans-serif; }
-        .cyber-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 14px; padding: 25px; box-shadow: 0 0 20px rgba(0,242,254,0.1); }
-        .cyber-btn { background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); color: #000; font-weight: bold; border: none; }
-        .cyber-btn:hover { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #000; box-shadow: 0 0 15px #00f2fe; }
-        .tab-btn { color: #94a3b8; background: #1e293b; margin: 4px; border-radius: 8px; font-weight: 600; padding: 10px 16px; border: none; transition: 0.2s; }
-        .tab-btn.active { background: #00f2fe; color: #000; font-weight: bold; box-shadow: 0 0 12px #00f2fe; }
-        .result-box { background: #1a2234; border-left: 4px solid #00f2fe; padding: 15px; border-radius: 6px; margin-top: 15px; color: #fff; }
-        .form-control { background: #0b1120; border: 1px solid #334155; color: #00f2fe; }
-        .form-control:focus { background: #0b1120; color: #00f2fe; border-color: #00f2fe; box-shadow: 0 0 10px #00f2fe; }
+        :root {
+            --cyber-bg: #050811;
+            --cyber-card: rgba(15, 23, 42, 0.75);
+            --neon-cyan: #00f2fe;
+            --neon-purple: #7928ca;
+            --neon-pink: #ff007f;
+            --neon-green: #00ff87;
+            --neon-red: #ff0055;
+            --text-glow: 0 0 10px rgba(0, 242, 254, 0.6);
+        }
+
+        body {
+            background-color: var(--cyber-bg);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(121, 40, 202, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(0, 242, 254, 0.15) 0%, transparent 40%);
+            color: #e2e8f0;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+        }
+
+        .cyber-font { font-family: 'Orbitron', sans-serif; }
+
+        /* Header Styling */
+        .cyber-header {
+            background: rgba(10, 15, 30, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .brand-title {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--text-glow);
+        }
+
+        /* Glassmorphism Cards */
+        .cyber-card {
+            background: var(--cyber-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .cyber-card:hover {
+            border-color: rgba(0, 242, 254, 0.3);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.2);
+        }
+
+        /* Buttons & Dynamic Tabs */
+        .tab-btn {
+            background: rgba(30, 41, 59, 0.7);
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin: 4px;
+            transition: all 0.25s ease;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            color: #fff;
+            border: none;
+            box-shadow: 0 0 18px rgba(0, 242, 254, 0.5);
+            font-weight: 700;
+        }
+
+        .cyber-btn {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-btn:hover {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.8);
+            transform: scale(1.02);
+            color: #000;
+        }
+
+        /* Inputs */
+        .cyber-input {
+            background: rgba(11, 17, 32, 0.8) !important;
+            border: 1px solid rgba(0, 242, 254, 0.2) !important;
+            color: var(--neon-cyan) !important;
+            border-radius: 8px !important;
+            font-family: monospace;
+            padding: 14px;
+        }
+
+        .cyber-input:focus {
+            border-color: var(--neon-cyan) !important;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4) !important;
+        }
+
+        /* Result Alerts */
+        .danger-box {
+            background: rgba(255, 0, 85, 0.12);
+            border-left: 5px solid var(--neon-red);
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .safe-box {
+            background: rgba(0, 255, 135, 0.12);
+            border-left: 5px solid var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 135, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .terminal-output {
+            background: #02040a;
+            border: 1px solid rgba(0, 242, 254, 0.15);
+            border-radius: 8px;
+            padding: 18px;
+            color: #33f3ff;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body x-data="{ tab: '{{ active_tab if active_tab else 'url' }}' }">
-<div class="container-fluid py-4">
-    <div class="text-center mb-4">
-        <h1 class="fw-bold" style="letter-spacing: 2px;">🛡️ CYBERSHIELD ULTIMATE THREAT SUITE</h1>
-        <p class="text-secondary">Next-Gen Real-Time Cyber Security & Threat Intelligence Engine</p>
-    </div>
 
-    <!-- Navigation Tabs -->
+<!-- Futuristic Top Header -->
+<header class="cyber-header py-3 mb-4 sticky-top">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <i class="fa-solid fa-shield-halved fa-2x text-info me-3 animate__animated animate__pulse animate__infinite"></i>
+            <div>
+                <h2 class="brand-title cyber-font m-0 fw-bold">CYBERSHIELD</h2>
+                <small class="text-secondary tracking-widest" style="letter-spacing: 2px;">THREAT SUITE v2.0</small>
+            </div>
+        </div>
+        <div>
+            <span class="badge bg-dark border border-info text-info p-2 px-3 cyber-font">
+                <i class="fa-solid fa-signal text-success me-1"></i> LIVE SHIELD ACTIVE
+            </span>
+        </div>
+    </div>
+</header>
+
+<div class="container-fluid px-4">
+    <!-- Dynamic Cyber Navigation Bar -->
     <div class="d-flex flex-wrap justify-content-center mb-4">
-        <button class="tab-btn" :class="{ 'active': tab === 'url' }" @click="tab = 'url'"><i class="fa-solid fa-globe"></i> URL Inspector</button>
-        <button class="tab-btn" :class="{ 'active': tab === 'qr' }" @click="tab = 'qr'"><i class="fa-solid fa-qrcode"></i> QR Quishing</button>
-        <button class="tab-btn" :class="{ 'active': tab === 'whois' }" @click="tab = 'whois'"><i class="fa-solid fa-server"></i> WHOIS & IP</button>
-        <button class="tab-btn" :class="{ 'active': tab === 'ports' }" @click="tab = 'ports'"><i class="fa-solid fa-network-wired"></i> Port Scanner</button>
-        <button class="tab-btn" :class="{ 'active': tab === 'subdomains' }" @click="tab = 'subdomains'"><i class="fa-solid fa-sitemap"></i> Subdomain Finder</button>
-        <button class="tab-btn" :class="{ 'active': tab === 'dns' }" @click="tab = 'dns'"><i class="fa-solid fa-dns"></i> DNS Lookup</button>
-        <button class="tab-btn" :class="{ 'active': tab === 'ssl' }" @click="tab = 'ssl'"><i class="fa-solid fa-lock"></i> SSL Cert Audit</button>
-        <button class="tab-btn" :class="{ 'active': tab === 'headers' }" @click="tab = 'headers'"><i class="fa-solid fa-shield-halved"></i> Security Headers</button>
-        <button class="tab-btn" :class="{ 'active': tab === 'pwd' }" @click="tab = 'pwd'"><i class="fa-solid fa-key"></i> Password Strength</button>
-        <button class="tab-btn" :class="{ 'active': tab === 'hash' }" @click="tab = 'hash'"><i class="fa-solid fa-hashtag"></i> Hash Tool</button>
-        <button class="tab-btn" :class="{ 'active': tab === 'jwt' }" @click="tab = 'jwt'"><i class="fa-solid fa-code"></i> Base64 / JWT</button>
-        <button class="tab-btn" :class="{ 'active': tab === 'enc' }" @click="tab = 'enc'"><i class="fa-solid fa-user-secret"></i> Text Cipher</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'url' }" @click="tab = 'url'"><i class="fa-solid fa-radar me-1"></i> URL Inspector</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'qr' }" @click="tab = 'qr'"><i class="fa-solid fa-qrcode me-1"></i> QR Quishing</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'ipgeo' }" @click="tab = 'ipgeo'"><i class="fa-solid fa-location-dot me-1"></i> IP Geolocator</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'vt' }" @click="tab = 'vt'"><i class="fa-solid fa-virus me-1"></i> VirusTotal Intel</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'whois' }" @click="tab = 'whois'"><i class="fa-solid fa-server me-1"></i> WHOIS Lookup</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'ports' }" @click="tab = 'ports'"><i class="fa-solid fa-network-wired me-1"></i> Port Scanner</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'subdomains' }" @click="tab = 'subdomains'"><i class="fa-solid fa-sitemap me-1"></i> Subdomain Finder</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'dns' }" @click="tab = 'dns'"><i class="fa-solid fa-dns me-1"></i> DNS Lookup</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'ssl' }" @click="tab = 'ssl'"><i class="fa-solid fa-lock me-1"></i> SSL Audit</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'headers' }" @click="tab = 'headers'"><i class="fa-solid fa-bug me-1"></i> Headers Audit</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'pwd' }" @click="tab = 'pwd'"><i class="fa-solid fa-key me-1"></i> Password Strength</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'hash' }" @click="tab = 'hash'"><i class="fa-solid fa-hashtag me-1"></i> Hash Tool</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'jwt' }" @click="tab = 'jwt'"><i class="fa-solid fa-code me-1"></i> Base64 / JWT</button>
+        <button class="tab-btn" :class="{ 'active': tab === 'enc' }" @click="tab = 'enc'"><i class="fa-solid fa-user-secret me-1"></i> Text Cipher</button>
     </div>
 
-    <div class="container">
+    <div class="container col-lg-10">
         <!-- 1. URL Inspector -->
         <div x-show="tab === 'url'" class="cyber-card">
-            <h3><i class="fa-solid fa-radar"></i> AI Phishing & Malicious URL Scanner</h3>
-            <form action="/scan" method="POST" class="mt-3">
-                <div class="input-group">
-                    <input type="text" name="url" class="form-control form-control-lg" placeholder="Enter URL (e.g. http://192.168.1.1/admin/login_en.asp)" required value="{{ input_url if input_url }}">
-                    <button class="btn cyber-btn px-4" type="submit">SCAN THREAT</button>
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-shield-cat me-2"></i>AI Phishing & Malicious URL Scanner</h3>
+            <p class="text-secondary">Deep heuristic path inspection, entropy analysis & brand spoofing detection</p>
+            <form action="/scan" method="POST" class="mt-4">
+                <div class="input-group input-group-lg">
+                    <input type="text" name="url" class="form-control cyber-input" placeholder="Paste suspicious URL (e.g. http://stefanocardone.com/wp-includes/SimplePie/HTTP/index.html)" required value="{{ input_url if input_url }}">
+                    <button class="btn cyber-btn" type="submit">ANALYZE LINK</button>
                 </div>
             </form>
 
             {% if result %}
-            <div class="result-box mt-4 border-start border-4 {{ 'border-danger' if result.is_phishing else 'border-success' }}">
-                <h4 class="{{ 'text-danger' if result.is_phishing else 'text-success' }}">STATUS: {{ result.status }} (Risk Score: {{ result.risk_score }}%)</h4>
-                <p><b>Target URL:</b> {{ result.url }}</p>
+            <div class="mt-4 {{ 'danger-box' if result.is_phishing else 'safe-box' }}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="cyber-font m-0 {{ 'text-danger' if result.is_phishing else 'text-success' }}">
+                        <i class="fa-solid {{ 'fa-triangle-exclamation' if result.is_phishing else 'fa-circle-check' }} me-2"></i>
+                        {{ result.status }} (Risk Score: {{ result.risk_score }}%)
+                    </h3>
+                </div>
+                <p class="mt-2 mb-2 text-light"><b>Target URL:</b> <code>{{ result.url }}</code></p>
                 {% if result.reasons %}
-                <ul>
+                <ul class="mb-0 mt-3 text-warning">
                     {% for reason in result.reasons %}
                     <li>{{ reason }}</li>
                     {% endfor %}
@@ -68,133 +228,161 @@
             {% endif %}
         </div>
 
-        <!-- 2. QR Scanner -->
+        <!-- 2. QR Quishing -->
         <div x-show="tab === 'qr'" class="cyber-card" style="display: none;">
-            <h3><i class="fa-solid fa-qrcode"></i> QR Quishing Threat Inspector</h3>
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-qrcode me-2"></i>QR Code Quishing Inspector</h3>
             <form action="/scan-qr" method="POST" enctype="multipart/form-data" class="mt-3">
-                <input type="file" name="qr_image" class="form-control mb-3" accept="image/*" required>
-                <button class="btn cyber-btn w-100" type="submit">ANALYZE QR IMAGE</button>
+                <input type="file" name="qr_image" class="form-control cyber-input mb-3" accept="image/*" required>
+                <button class="btn cyber-btn w-100" type="submit">DECODE & SCAN QR CODE</button>
             </form>
             {% if qr_error %}
-            <div class="alert alert-danger mt-3">{{ qr_error }}</div>
+            <div class="alert alert-danger mt-3 bg-dark border-danger text-danger">{{ qr_error }}</div>
             {% endif %}
         </div>
 
-        <!-- 3. WHOIS -->
+        <!-- 3. IP Geolocator -->
+        <div x-show="tab === 'ipgeo'" class="cyber-card" style="display: none;">
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-location-dot me-2"></i>IP Geolocation & Threat Intelligence</h3>
+            <form action="/ip-geo" method="POST" class="mt-3">
+                <div class="input-group input-group-lg">
+                    <input type="text" name="target" class="form-control cyber-input" placeholder="Domain or IP (e.g. 8.8.8.8 or github.com)" required>
+                    <button class="btn cyber-btn" type="submit">LOCATE IP</button>
+                </div>
+            </form>
+            {% if ip_geo_result %}
+            <div class="terminal-output mt-3">{{ ip_geo_result }}</div>
+            {% endif %}
+        </div>
+
+        <!-- 4. VirusTotal Intel -->
+        <div x-show="tab === 'vt'" class="cyber-card" style="display: none;">
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-virus me-2"></i>VirusTotal Global Threat Intelligence</h3>
+            <form action="/vt-lookup" method="POST" class="mt-3">
+                <div class="input-group input-group-lg">
+                    <input type="text" name="resource" class="form-control cyber-input" placeholder="File Hash (MD5 / SHA256)" required>
+                    <button class="btn cyber-btn" type="submit">QUERY INTEL</button>
+                </div>
+            </form>
+            {% if vt_result %}
+            <div class="terminal-output mt-3">{{ vt_result }}</div>
+            {% endif %}
+        </div>
+
+        <!-- 5. WHOIS -->
         <div x-show="tab === 'whois'" class="cyber-card" style="display: none;">
-            <h3><i class="fa-solid fa-server"></i> Domain WHOIS & IP Geolocator</h3>
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-server me-2"></i>Domain WHOIS Lookup</h3>
             <form action="/whois" method="POST" class="mt-3">
-                <div class="input-group">
-                    <input type="text" name="domain" class="form-control" placeholder="Domain (e.g. google.com)" required>
-                    <button class="btn cyber-btn" type="submit">LOOKUP WHOIS</button>
+                <div class="input-group input-group-lg">
+                    <input type="text" name="domain" class="form-control cyber-input" placeholder="Domain (e.g. google.com)" required>
+                    <button class="btn cyber-btn" type="submit">WHOIS SEARCH</button>
                 </div>
             </form>
             {% if whois_info %}
-            <div class="result-box mt-3"><pre class="text-white mb-0" style="white-space: pre-wrap;">{{ whois_info }}</pre></div>
+            <div class="terminal-output mt-3">{{ whois_info }}</div>
             {% endif %}
         </div>
 
-        <!-- 4. Port Scanner (NEW) -->
+        <!-- 6. Port Scanner -->
         <div x-show="tab === 'ports'" class="cyber-card" style="display: none;">
-            <h3><i class="fa-solid fa-network-wired"></i> Fast Port Scanner (80, 443, 21, 22, 3306, 8080)</h3>
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-network-wired me-2"></i>Multi-Port Scanner</h3>
             <form action="/port-scan" method="POST" class="mt-3">
-                <div class="input-group">
-                    <input type="text" name="host" class="form-control" placeholder="Target Domain / IP (e.g. scanme.nmap.org)" required>
-                    <button class="btn cyber-btn" type="submit">SCAN OPEN PORTS</button>
+                <div class="input-group input-group-lg">
+                    <input type="text" name="host" class="form-control cyber-input" placeholder="Host / IP (e.g. scanme.nmap.org)" required>
+                    <button class="btn cyber-btn" type="submit">SCAN PORTS</button>
                 </div>
             </form>
             {% if port_results %}
-            <div class="result-box mt-3"><pre class="text-white mb-0">{{ port_results }}</pre></div>
+            <div class="terminal-output mt-3">{{ port_results }}</div>
             {% endif %}
         </div>
 
-        <!-- 5. Subdomain Finder (NEW) -->
+        <!-- 7. Subdomain Finder -->
         <div x-show="tab === 'subdomains'" class="cyber-card" style="display: none;">
-            <h3><i class="fa-solid fa-sitemap"></i> Subdomain Enumerator</h3>
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-sitemap me-2"></i>Subdomain Enumerator</h3>
             <form action="/subdomains" method="POST" class="mt-3">
-                <div class="input-group">
-                    <input type="text" name="domain" class="form-control" placeholder="Domain (e.g. github.com)" required>
+                <div class="input-group input-group-lg">
+                    <input type="text" name="domain" class="form-control cyber-input" placeholder="Domain (e.g. github.com)" required>
                     <button class="btn cyber-btn" type="submit">FIND SUBDOMAINS</button>
                 </div>
             </form>
             {% if subdomain_results %}
-            <div class="result-box mt-3"><pre class="text-white mb-0">{{ subdomain_results }}</pre></div>
+            <div class="terminal-output mt-3">{{ subdomain_results }}</div>
             {% endif %}
         </div>
 
-        <!-- 6. DNS Lookup (NEW) -->
+        <!-- 8. DNS Lookup -->
         <div x-show="tab === 'dns'" class="cyber-card" style="display: none;">
-            <h3><i class="fa-solid fa-dns"></i> DNS Records Lookup (A, MX, NS, TXT)</h3>
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-dns me-2"></i>DNS Records Inspector</h3>
             <form action="/dns-lookup" method="POST" class="mt-3">
-                <div class="input-group">
-                    <input type="text" name="domain" class="form-control" placeholder="Domain (e.g. wikipedia.org)" required>
-                    <button class="btn cyber-btn" type="submit">FETCH DNS RECORDS</button>
+                <div class="input-group input-group-lg">
+                    <input type="text" name="domain" class="form-control cyber-input" placeholder="Domain (e.g. wikipedia.org)" required>
+                    <button class="btn cyber-btn" type="submit">FETCH DNS</button>
                 </div>
             </form>
             {% if dns_results %}
-            <div class="result-box mt-3"><pre class="text-white mb-0">{{ dns_results }}</pre></div>
+            <div class="terminal-output mt-3">{{ dns_results }}</div>
             {% endif %}
         </div>
 
-        <!-- 7. SSL Audit -->
+        <!-- 9. SSL Audit -->
         <div x-show="tab === 'ssl'" class="cyber-card" style="display: none;">
-            <h3><i class="fa-solid fa-lock"></i> SSL Certificate Audit</h3>
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-lock me-2"></i>SSL / TLS Certificate Auditor</h3>
             <form action="/ssl-check" method="POST" class="mt-3">
-                <div class="input-group">
-                    <input type="text" name="domain" class="form-control" placeholder="Domain (e.g. google.com)" required>
-                    <button class="btn cyber-btn" type="submit">CHECK SSL</button>
+                <div class="input-group input-group-lg">
+                    <input type="text" name="domain" class="form-control cyber-input" placeholder="Domain (e.g. google.com)" required>
+                    <button class="btn cyber-btn" type="submit">AUDIT SSL</button>
                 </div>
             </form>
             {% if ssl_result %}
-            <div class="result-box mt-3"><pre class="text-white mb-0" style="white-space: pre-wrap;">{{ ssl_result }}</pre></div>
+            <div class="terminal-output mt-3">{{ ssl_result }}</div>
             {% endif %}
         </div>
 
-        <!-- 8. Security Headers -->
+        <!-- 10. Headers Audit -->
         <div x-show="tab === 'headers'" class="cyber-card" style="display: none;">
-            <h3><i class="fa-solid fa-shield-halved"></i> HTTP Security Headers Audit</h3>
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-bug me-2"></i>HTTP Security Headers Auditor</h3>
             <form action="/headers-check" method="POST" class="mt-3">
-                <div class="input-group">
-                    <input type="text" name="url" class="form-control" placeholder="URL (e.g. https://google.com)" required>
+                <div class="input-group input-group-lg">
+                    <input type="text" name="url" class="form-control cyber-input" placeholder="Target URL" required>
                     <button class="btn cyber-btn" type="submit">AUDIT HEADERS</button>
                 </div>
             </form>
             {% if headers_result %}
-            <div class="result-box mt-3"><pre class="text-white mb-0" style="white-space: pre-wrap;">{{ headers_result }}</pre></div>
+            <div class="terminal-output mt-3">{{ headers_result }}</div>
             {% endif %}
         </div>
 
-        <!-- 9. Password Strength -->
+        <!-- 11. Password Strength -->
         <div x-show="tab === 'pwd'" class="cyber-card" style="display: none;">
-            <h3><i class="fa-solid fa-key"></i> Password Entropy & Leak Tester</h3>
-            <input type="password" id="pwdInput" class="form-control form-control-lg mt-3" placeholder="Type password..." oninput="checkPwd()">
-            <div class="result-box mt-3" id="pwdResult">Type a password above to evaluate entropy.</div>
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-key me-2"></i>Password Entropy & Strength Analyzer</h3>
+            <input type="password" id="pwdInput" class="form-control cyber-input form-control-lg mt-3" placeholder="Type password to analyze..." oninput="checkPwd()">
+            <div class="terminal-output mt-3" id="pwdResult">Entropy Score: 0 bits | Assessment: Waiting for input...</div>
         </div>
 
-        <!-- 10. Hash Generator -->
+        <!-- 12. Hash Tool -->
         <div x-show="tab === 'hash'" class="cyber-card" style="display: none;">
-            <h3><i class="fa-solid fa-hashtag"></i> Multi-Hash Generator (MD5, SHA1, SHA256)</h3>
-            <input type="text" id="hashInput" class="form-control mt-3" placeholder="Type text..." oninput="genHash()">
-            <div class="result-box mt-3" id="hashResult">Hashes will render here...</div>
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-hashtag me-2"></i>Multi-Hash Generator (MD5 / SHA1 / SHA256)</h3>
+            <input type="text" id="hashInput" class="form-control cyber-input form-control-lg mt-3" placeholder="Type plaintext..." oninput="genHash()">
+            <div class="terminal-output mt-3" id="hashResult">Hashes will compute here live...</div>
         </div>
 
-        <!-- 11. JWT Decoder -->
+        <!-- 13. JWT Decoder -->
         <div x-show="tab === 'jwt'" class="cyber-card" style="display: none;">
-            <h3><i class="fa-solid fa-code"></i> Base64 & JWT Token Decoder</h3>
-            <textarea id="jwtInput" class="form-control mt-3" rows="3" placeholder="Paste Base64 or JWT token..."></textarea>
-            <button class="btn cyber-btn mt-3 w-100" onclick="decodeJWT()">DECODE TOKEN</button>
-            <div class="result-box mt-3" id="jwtResult">Decoded output...</div>
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-code me-2"></i>Base64 & JWT Token Inspector</h3>
+            <textarea id="jwtInput" class="form-control cyber-input mt-3" rows="3" placeholder="Paste Base64 encoded payload or JWT string..."></textarea>
+            <button class="btn cyber-btn mt-3 w-100" onclick="decodeJWT()">DECODE PAYLOAD</button>
+            <div class="terminal-output mt-3" id="jwtResult">Decoded JSON payload output...</div>
         </div>
 
-        <!-- 12. Text Encryptor -->
+        <!-- 14. Text Cipher -->
         <div x-show="tab === 'enc'" class="cyber-card" style="display: none;">
-            <h3><i class="fa-solid fa-user-secret"></i> Text Cipher Utility</h3>
-            <input type="text" id="plainText" class="form-control mt-3" placeholder="Enter text...">
+            <h3 class="cyber-font text-info mb-3"><i class="fa-solid fa-user-secret me-2"></i>Text Cryptographic Cipher</h3>
+            <input type="text" id="plainText" class="form-control cyber-input form-control-lg mt-3" placeholder="Enter plain text...">
             <div class="mt-3">
-                <button class="btn cyber-btn me-2" onclick="rot13()">ROT13 Cipher</button>
-                <button class="btn btn-outline-info" onclick="b64Enc()">Base64 Encode</button>
+                <button class="btn cyber-btn me-2" onclick="rot13()">ROT13 CIPHER</button>
+                <button class="btn btn-outline-info" onclick="b64Enc()">BASE64 ENCODE</button>
             </div>
-            <div class="result-box mt-3" id="cipherResult">Ciphertext...</div>
+            <div class="terminal-output mt-3" id="cipherResult">Ciphertext result...</div>
         </div>
     </div>
 </div>
@@ -206,17 +394,17 @@
         if(/[A-Z]/.test(p)) score += 15;
         if(/[0-9]/.test(p)) score += 15;
         if(/[^A-Za-z0-9]/.test(p)) score += 20;
-        document.getElementById("pwdResult").innerText = `Length: ${p.length} | Entropy Score: ${score}/100 | Strength: ${score > 65 ? 'STRONG' : 'WEAK'}`;
+        document.getElementById("pwdResult").innerText = `Length: ${p.length} chars | Entropy Score: ${score}/100 | Strength: ${score > 65 ? 'STRONG (SECURE)' : 'WEAK (VULNERABLE)'}`;
     }
     function rot13() {
         let str = document.getElementById("plainText").value;
         let res = str.replace(/[a-zA-Z]/g, function(c){
             return String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);
         });
-        document.getElementById("cipherResult").innerText = "ROT13: " + res;
+        document.getElementById("cipherResult").innerText = "ROT13 Cipher: " + res;
     }
     function b64Enc() {
-        document.getElementById("cipherResult").innerText = "Base64: " + btoa(document.getElementById("plainText").value);
+        document.getElementById("cipherResult").innerText = "Base64 Encoded: " + btoa(document.getElementById("plainText").value);
     }
     function decodeJWT() {
         try {
