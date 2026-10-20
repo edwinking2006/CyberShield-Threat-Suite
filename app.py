@@ -121,12 +121,24 @@ def web_scan():
     return render_template('index.html', result=result, input_url=target_url, active_tab='url')
 
 @app.route('/scan-url', methods=['POST'])
-def extension_scan():
-    data = request.get_json() or {}
-    target_url = data.get('url', '')
-    result = analyze_url_pure_ml(target_url)
-    return jsonify(result)
-
+def scan_url_api():
+    try:
+        data = request.get_json(silent=True) or {}
+        target_url = data.get('url', '')
+        if not target_url:
+            return jsonify({'error': 'Missing url', 'is_phishing': False, 'risk_score': 0, 'status': 'SAFE'}), 400
+        
+        result = analyze_url_pure_ml(target_url)
+        return jsonify({
+            'url': result.get('url', target_url),
+            'is_phishing': result.get('is_phishing', False),
+            'risk_score': result.get('risk_score', 0),
+            'status': result.get('status', 'SAFE'),
+            'reasons': result.get('reasons', [])
+        }), 200
+    except Exception as e:
+        print(f"API Error: {e}")
+        return jsonify({'error': str(e), 'is_phishing': False, 'risk_score': 0, 'status': 'ERROR'}), 500
 @app.route('/scan-qr', methods=['POST'])
 def scan_qr():
     if 'qr_image' not in request.files:
