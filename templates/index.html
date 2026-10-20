@@ -228,15 +228,35 @@
             {% endif %}
         </div>
 
-        <!-- 2. QR Quishing -->
+       <!-- 2. QR Quishing -->
         <div x-show="tab === 'qr'" class="cyber-card" style="display: none;">
             <h4 class="cyber-font text-info mb-2 fs-5"><i class="fa-solid fa-qrcode me-2"></i>QR Code Quishing</h4>
+            <!-- enctype="multipart/form-data" add panniyiruken, so Android file chooser work aagum -->
             <form action="/scan-qr" method="POST" enctype="multipart/form-data" class="mt-2">
                 <input type="file" name="qr_image" class="form-control cyber-input mb-2" accept="image/*" required>
                 <button class="btn cyber-btn" type="submit">SCAN QR</button>
             </form>
+            
             {% if qr_error %}
             <div class="alert alert-danger mt-2 p-2 small bg-dark text-danger">{{ qr_error }}</div>
+            {% endif %}
+
+            <!-- QR Result Display Box (Added so decoded result & risk score shows up properly) -->
+            {% if extracted_qr_url %}
+            <div class="mt-3 {{ 'danger-box' if result.is_phishing else 'safe-box' }}">
+                <p class="text-info mb-1 small"><b>Decoded QR URL:</b> <code>{{ extracted_qr_url }}</code></p>
+                <h5 class="cyber-font m-0 {{ 'text-danger' if result.is_phishing else 'text-success' }}">
+                    <i class="fa-solid {{ 'fa-triangle-exclamation' if result.is_phishing else 'fa-circle-check' }} me-1"></i>
+                    {{ result.status }} (Risk: {{ result.risk_score }}%)
+                </h5>
+                {% if result.reasons %}
+                <ul class="mb-0 mt-2 text-warning small ps-3">
+                    {% for reason in result.reasons %}
+                    <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
             {% endif %}
         </div>
 

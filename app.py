@@ -62,7 +62,19 @@ def analyze_url_pure_ml(target_url):
     parsed = urlparse(formatted_url)
     domain = parsed.netloc.lower()
 
-    # 1. Pure ML Model Probability Inference
+    # --- WHITELIST CHECK FOR KNOWN SAFE DOMAINS ---
+    trusted_domains = ['youtube.com', 'google.com', 'github.com', 'wikipedia.org', 'microsoft.com', 'apple.com', 'stackoverflow.com']
+    if any(trusted in domain for trusted in trusted_domains):
+        return {
+            'url': target_url,
+            'is_phishing': False,
+            'risk_score': 2,
+            'status': 'SAFE',
+            'reasons': ["Verified Safe Domain (Whitelisted Official Platform)"]
+        }
+    # ---------------------------------------------
+
+    # Rest of your ML and VirusTotal code continues below...
     ml_risk_score = 0
     if ml_model:
         try:
@@ -72,6 +84,7 @@ def analyze_url_pure_ml(target_url):
             reasons.append(f"AI Machine Learning Model Threat Probability: {ml_risk_score}%")
         except Exception as e:
             print(f"ML Inference Error: {e}")
+    # ... (rest of code)
 
     # 2. Real-Time VirusTotal Live Intelligence Query (Global Threat Databases)
     vt_flagged_count = 0
@@ -149,8 +162,16 @@ def scan_qr():
         img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
         detector = cv2.QRCodeDetector()
         extracted_url, _, _ = detector.detectAndDecode(img)
+        
         if not extracted_url:
             return render_template('index.html', qr_error="No valid QR code detected in image", active_tab='qr')
+        
+        # Clean up any accidental pandas/dataframe text formatting or extra spaces
+        extracted_url = str(extracted_url).strip()
+        if "http" in extracted_url:
+            parts = extracted_url.split("http")
+            extracted_url = "http" + parts[-1].split()[0]
+            
         result = analyze_url_pure_ml(extracted_url)
         return render_template('index.html', result=result, extracted_qr_url=extracted_url, active_tab='qr')
     except Exception as e:
